@@ -1,7 +1,10 @@
-// server.ts
-import { serve } from "https://deno.land/std@0.182.0/http/server.ts";
+// main.ts
+// 使用 Deno 内建的 HTTP 服务器
+// 无需从 std 导入 'serve'
 
-const htmlContent = `<!DOCTYPE html>
+// 将你的完整 HTML 内容粘贴到这个模板字符串中
+const htmlContent = `
+<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
@@ -24,13 +27,13 @@ const htmlContent = `<!DOCTYPE html>
             --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
             --radius: 0.5rem;
         }
-        
+
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
-        
+
         body {
             font-family: 'Inter', system-ui, -apple-system, sans-serif;
             max-width: 600px;
@@ -40,7 +43,7 @@ const htmlContent = `<!DOCTYPE html>
             color: var(--text-color);
             background-color: #fafafa;
         }
-        
+
         h1 {
             text-align: center;
             margin-bottom: 2rem;
@@ -50,7 +53,7 @@ const htmlContent = `<!DOCTYPE html>
             position: relative;
             padding-bottom: 0.5rem;
         }
-        
+
         h1::after {
             content: "";
             position: absolute;
@@ -62,7 +65,7 @@ const htmlContent = `<!DOCTYPE html>
             background: linear-gradient(to right, var(--primary-color), #60a5fa);
             border-radius: 3px;
         }
-        
+
         .calculator {
             background-color: white;
             border-radius: var(--radius);
@@ -70,18 +73,18 @@ const htmlContent = `<!DOCTYPE html>
             box-shadow: var(--shadow-lg);
             transition: all 0.3s ease;
         }
-        
+
         .section {
             margin-bottom: 2rem;
             padding-bottom: 1.5rem;
             border-bottom: 1px solid var(--border-color);
             transition: all 0.2s ease;
         }
-        
+
         .section:last-of-type {
             border-bottom: none;
         }
-        
+
         .section-title {
             font-weight: 600;
             font-size: 1.1rem;
@@ -90,7 +93,7 @@ const htmlContent = `<!DOCTYPE html>
             display: flex;
             align-items: center;
         }
-        
+
         .section-title::before {
             content: "";
             display: inline-block;
@@ -100,12 +103,12 @@ const htmlContent = `<!DOCTYPE html>
             border-radius: 4px;
             margin-right: 8px;
         }
-        
+
         .input-group {
             margin-bottom: 1rem;
             position: relative;
         }
-        
+
         label {
             display: block;
             margin-bottom: 0.5rem;
@@ -113,7 +116,7 @@ const htmlContent = `<!DOCTYPE html>
             font-weight: 500;
             color: var(--text-light);
         }
-        
+
         input {
             width: 100%;
             padding: 0.75rem 1rem;
@@ -125,17 +128,17 @@ const htmlContent = `<!DOCTYPE html>
             background-color: white;
             font-family: 'Inter', sans-serif;
         }
-        
+
         input:focus {
             outline: none;
             border-color: var(--primary-color);
             box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
         }
-        
+
         input:hover {
             border-color: #cbd5e1;
         }
-        
+
         button {
             background-color: var(--primary-color);
             color: white;
@@ -152,17 +155,17 @@ const htmlContent = `<!DOCTYPE html>
             position: relative;
             overflow: hidden;
         }
-        
+
         button:hover {
             background-color: var(--primary-hover);
             transform: translateY(-1px);
             box-shadow: var(--shadow-md);
         }
-        
+
         button:active {
             transform: translateY(0);
         }
-        
+
         .calculate-button {
             background: linear-gradient(45deg, var(--primary-color), #4f46e5);
             font-weight: 600;
@@ -173,7 +176,7 @@ const htmlContent = `<!DOCTYPE html>
             position: relative;
             overflow: hidden;
         }
-        
+
         .calculate-button::after {
             content: '';
             position: absolute;
@@ -185,21 +188,21 @@ const htmlContent = `<!DOCTYPE html>
             transform: rotate(30deg);
             transition: transform 0.5s ease;
         }
-        
+
         .calculate-button:hover::after {
             transform: rotate(30deg) translate(10%, 10%);
         }
-        
+
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
         }
-        
+
         @keyframes slideIn {
             from { transform: translateX(-10px); opacity: 0; }
             to { transform: translateX(0); opacity: 1; }
         }
-        
+
         .results {
             margin-top: 2rem;
             padding: 2rem;
@@ -210,12 +213,12 @@ const htmlContent = `<!DOCTYPE html>
             animation: fadeIn 0.5s ease;
             border-left: 4px solid var(--primary-color);
         }
-        
+
         .results.show {
             display: block;
             animation: fadeIn 0.5s ease forwards;
         }
-        
+
         .result-row {
             display: grid;
             grid-template-columns: 1fr auto;
@@ -225,26 +228,26 @@ const htmlContent = `<!DOCTYPE html>
             padding: 0.6rem 0;
             border-bottom: 1px dashed rgba(37, 99, 235, 0.1);
         }
-        
+
         .result-row:last-child {
             margin-bottom: 0;
             padding-bottom: 0;
             border-bottom: none;
         }
-        
+
         .result-label {
             font-weight: 500;
             color: var(--text-light);
             padding-right: 0.5rem;
         }
-        
+
         .results-grid {
             display: grid;
             grid-template-columns: 1fr;
             gap: 2rem;
             margin-top: 1.5rem;
         }
-        
+
         .results-column {
             background-color: white;
             border-radius: var(--radius);
@@ -256,16 +259,16 @@ const htmlContent = `<!DOCTYPE html>
             animation-delay: 0.1s;
             opacity: 0;
         }
-        
+
         .results-column:hover {
             box-shadow: var(--shadow-md);
             transform: translateY(-2px);
         }
-        
+
         .results-column:nth-child(2) {
             animation-delay: 0.3s;
         }
-        
+
         .column-title {
             font-weight: 600;
             margin-bottom: 1.2rem;
@@ -276,7 +279,7 @@ const htmlContent = `<!DOCTYPE html>
             font-size: 1.05rem;
             position: relative;
         }
-        
+
         .column-title::after {
             content: "";
             position: absolute;
@@ -287,180 +290,180 @@ const htmlContent = `<!DOCTYPE html>
             background: var(--primary-color);
             border-radius: 1px;
         }
-        
+
         @media (min-width: 640px) {
             .calculator {
                 padding: 2.5rem;
             }
-            
+
             .section {
                 display: grid;
                 grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
                 gap: 1.5rem;
                 align-items: start;
             }
-            
+
             .section-title {
                 grid-column: 1 / -1;
             }
-            
+
             .input-group {
                 margin-bottom: 0;
             }
         }
-        
+
         /* 修改桌面端结果网格布局的媒体查询，中小屏幕下默认为单列 */
         .results-grid {
             grid-template-columns: 1fr; /* 覆盖任何其他设置，确保默认为单列 */
         }
-        
+
         /* 只有在大屏幕上才使用双列布局 */
         @media (min-width: 1025px) {
             .results-grid {
                 grid-template-columns: 1fr 1fr;
             }
         }
-        
+
         @media (max-width: 767px) {
             .results-grid {
                 grid-template-columns: 1fr;
                 gap: 2rem;
             }
-            
+
             .price-currency-grid {
                 grid-template-columns: 1fr 1fr;
                 gap: 1rem;
             }
-            
+
         }
-        
+
         /* 新增iPad适配规则 */
         @media (min-width: 768px) and (max-width: 1024px) {
             .results-grid {
                 grid-template-columns: 1fr;
                 gap: 2rem;
             }
-            
+
             .results-column {
                 padding: 2rem;
             }
-            
+
             .calculator {
                 padding: 2rem;
             }
-            
+
             .price-currency-grid {
                 grid-template-columns: 1fr 1fr;
                 gap: 1.5rem;
             }
-            
+
             body {
                 max-width: 700px;
                 margin: 2.5rem auto;
                 padding: 0 2rem;
             }
         }
-        
+
         @media (max-width: 639px) {
             .calculator {
                 padding: 1.5rem;
             }
-            
+
             .results {
                 padding: 1.5rem;
             }
-            
+
             .results-column {
                 padding: 1.25rem;
                 margin-bottom: 1rem;
             }
-            
+
             .price-currency-grid {
                 grid-template-columns: 1fr;
                 gap: 1rem;
             }
-            
+
             .base-price-section {
                 padding: 1rem;
             }
-            
+
             h1 {
                 font-size: 1.75rem;
             }
-            
+
             .unit-toggle {
                 flex-direction: row;
                 margin-bottom: 1.2rem;
             }
-            
+
             .unit-toggle button {
                 padding: 0.45rem;
                 font-size: 0.8rem;
             }
         }
-        
+
         @media (max-width: 480px) {
             body {
                 padding: 0 1rem;
                 margin: 1rem auto;
             }
-            
+
             .calculator {
                 padding: 1.25rem;
             }
-            
+
             .column-title {
                 font-size: 1rem;
             }
-            
+
             .section-title {
                 font-size: 1rem;
             }
-            
+
             .section-subtitle {
                 font-size: 0.9rem;
             }
-            
+
             .result-row {
                 flex-direction: column;
                 align-items: flex-start;
                 padding: 0.5rem 0;
             }
-            
+
             .result-row span:last-child {
                 margin-top: 0.25rem;
                 align-self: flex-end;
             }
-            
+
             .price-calculation div:not(:first-child) {
                 margin-left: 0.25rem;
             }
         }
-        
+
         @media (min-width: 1200px) {
             body {
                 max-width: 1200px;
             }
-            
+
             .calculator {
                 padding: 3rem;
             }
-            
+
             .results {
                 padding: 2.5rem;
             }
-            
+
             .results-column {
                 padding: 2rem;
             }
         }
-        
+
         .unit-toggle {
             display: flex;
             gap: 0.5rem;
             margin: 0.5rem 0 1rem 0;
         }
-        
+
         .unit-toggle button {
             flex: 1;
             padding: 0.5rem;
@@ -471,13 +474,13 @@ const htmlContent = `<!DOCTYPE html>
             box-shadow: none;
             margin-top: 0;
         }
-        
+
         .unit-toggle button.active {
             background-color: var(--primary-color);
             color: white;
             border-color: var(--primary-color);
         }
-        
+
         select {
             width: 100%;
             padding: 0.75rem 1rem;
@@ -494,25 +497,25 @@ const htmlContent = `<!DOCTYPE html>
             background-position: right 1rem center;
             background-size: 1rem;
         }
-        
+
         select:focus {
             outline: none;
             border-color: var(--primary-color);
             box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
         }
-        
+
         #total-cost {
             font-weight: 700;
             color: #2563eb;
             font-size: 1.1rem;
         }
-        
+
         #total-cost-cny {
             font-weight: 700;
             color: #ef4444;
             font-size: 1.1rem;
         }
-        
+
         .secondary-button {
             background-color: white;
             color: var(--primary-color);
@@ -524,12 +527,12 @@ const htmlContent = `<!DOCTYPE html>
             font-weight: 500;
             transition: all 0.2s ease;
         }
-        
+
         .secondary-button:hover {
             background-color: var(--highlight-color);
             transform: translateY(-1px);
         }
-        
+
         .exchange-rate-display {
             background-color: var(--highlight-color);
             padding: 0.8rem;
@@ -540,23 +543,23 @@ const htmlContent = `<!DOCTYPE html>
             color: var(--text-color);
             border-left: 3px solid var(--primary-color);
         }
-        
+
         #current-exchange-rate {
             font-weight: 700;
             color: var(--primary-color);
         }
-        
+
         .exchange-form {
             display: flex;
             flex-direction: column;
         }
-        
+
         .exchange-inputs {
             display: flex;
             align-items: center;
             gap: 10px;
         }
-        
+
         .exchange-equals {
             display: flex;
             align-items: center;
@@ -566,25 +569,25 @@ const htmlContent = `<!DOCTYPE html>
             color: var(--text-light);
             margin-top: 1.5rem;
         }
-        
+
         @media (max-width: 639px) {
             .exchange-inputs {
                 flex-direction: column;
             }
-            
+
             .exchange-equals {
                 margin: 0.5rem 0;
                 height: 40px;
             }
         }
-        
+
         .price-currency-grid {
             display: grid;
             grid-template-columns: 1fr;
             gap: 1.5rem;
             margin-top: 1rem;
         }
-        
+
         .price-currency-column {
             background-color: rgba(255, 255, 255, 0.7);
             border-radius: var(--radius);
@@ -595,13 +598,13 @@ const htmlContent = `<!DOCTYPE html>
             display: flex;
             flex-direction: column;
         }
-        
+
         .price-currency-column:hover {
             transform: translateY(-3px);
             box-shadow: var(--shadow-md);
             background-color: white;
         }
-        
+
         .currency-label {
             font-weight: 600;
             margin-bottom: 1rem;
@@ -611,13 +614,13 @@ const htmlContent = `<!DOCTYPE html>
             padding-bottom: 0.5rem;
             border-bottom: 2px solid var(--primary-color);
         }
-        
+
         .result-separator {
             height: 1px;
             background-color: var(--border-color);
             margin: 1.2rem 0;
         }
-        
+
         .section-subtitle {
             font-weight: 600;
             font-size: 1rem;
@@ -628,7 +631,7 @@ const htmlContent = `<!DOCTYPE html>
             padding: 0.6rem;
             border-radius: var(--radius);
         }
-        
+
         .base-price-section {
             background-color: rgba(255, 255, 255, 0.8);
             border-radius: var(--radius);
@@ -637,21 +640,21 @@ const htmlContent = `<!DOCTYPE html>
             margin-top: 1rem;
             transition: all 0.3s ease;
         }
-        
+
         .base-price-section:hover {
             box-shadow: var(--shadow-sm);
             background-color: white;
         }
-        
+
         .result-value {
             font-weight: 600;
             color: var(--primary-color);
         }
-        
+
         #base-input-price-display, #base-output-price-display,
         #real-input-price-usd, #real-output-price-usd,
         #real-input-price-cny, #real-output-price-cny,
-        #input-cost, #output-cost, 
+        #input-cost, #output-cost,
         #input-cost-cny, #output-cost-cny {
             font-weight: 400;
             color: var(--text-color);
@@ -663,7 +666,7 @@ const htmlContent = `<!DOCTYPE html>
             min-width: 120px;
             position: relative;
         }
-        
+
         .price-calculation {
             font-size: 0.85rem;
             color: var(--text-light);
@@ -675,25 +678,25 @@ const htmlContent = `<!DOCTYPE html>
             padding: 0.8rem;
             border-radius: 0.3rem;
         }
-        
+
         .price-calculation div:first-child {
             font-weight: 600;
             margin-bottom: 0.3rem;
             color: var(--primary-color);
         }
-        
+
         .price-calculation div:not(:first-child) {
             margin-left: 0.5rem;
             line-height: 1.5;
         }
-        
+
         .price-calc-separator {
             height: 1px;
             background-color: rgba(37, 99, 235, 0.1);
             margin: 0.5rem 0;
             border: none;
         }
-        
+
         /* 计算过程说明样式 */
         .calculation-details {
             font-size: 0.8rem;
@@ -708,11 +711,11 @@ const htmlContent = `<!DOCTYPE html>
             grid-column: 1 / -1;
             display: none; /* 默认隐藏 */
         }
-        
+
         .calculation-visible {
             display: block;
         }
-        
+
         /* 新增切换按钮样式 */
         .toggle-calculations {
             background-color: var(--highlight-color);
@@ -729,17 +732,17 @@ const htmlContent = `<!DOCTYPE html>
             text-align: center;
             transition: all 0.2s ease;
         }
-        
+
         .toggle-calculations:hover {
             background-color: rgba(37, 99, 235, 0.1);
         }
-        
+
         /* 价格显示元素 */
         .display-group {
             margin-bottom: 1rem;
             position: relative;
         }
-        
+
         .display-group label {
             display: block;
             margin-bottom: 0.5rem;
@@ -747,7 +750,7 @@ const htmlContent = `<!DOCTYPE html>
             font-weight: 500;
             color: var(--text-light);
         }
-        
+
         .price-display {
             width: 100%;
             padding: 0.75rem 1rem;
@@ -760,7 +763,7 @@ const htmlContent = `<!DOCTYPE html>
             font-weight: 500;
             color: var(--primary-color);
         }
-        
+
         .calculation-note {
             font-size: 0.85rem;
             color: var(--text-light);
@@ -771,13 +774,13 @@ const htmlContent = `<!DOCTYPE html>
             border-left: 3px solid var(--primary-color);
             grid-column: 1 / -1;
         }
-        
+
         .calculation-note div:first-child {
             font-weight: 600;
             margin-bottom: 0.4rem;
             color: var(--primary-color);
         }
-        
+
         .calculation-note div:not(:first-child) {
             margin-left: 0.5rem;
             line-height: 1.6;
@@ -786,7 +789,7 @@ const htmlContent = `<!DOCTYPE html>
 </head>
 <body>
     <h1>API价格计算器</h1>
-    
+
     <div class="calculator">
         <div class="section">
             <div class="section-title">倍率设置</div>
@@ -803,15 +806,15 @@ const htmlContent = `<!DOCTYPE html>
                 <input type="number" id="group-rate" step="0.1" value="1.00">
             </div>
         </div>
-        
+
         <div class="section">
             <div class="section-title">基础价格设置</div>
-            
+
             <div class="unit-toggle" style="grid-column: 1 / -1;">
                 <button id="base-price-per-million" class="active" onclick="toggleBaseUnit('million')">每百万tokens</button>
                 <button id="base-price-per-thousand" onclick="toggleBaseUnit('thousand')">每千tokens</button>
             </div>
-            
+
             <div class="input-group">
                 <label for="base-input-price">提示标价 (<span id="base-input-unit">每百万tokens</span> $)</label>
                 <input type="number" id="base-input-price" step="0.01" value="5.00">
@@ -821,7 +824,7 @@ const htmlContent = `<!DOCTYPE html>
                 <input type="number" id="base-output-price" step="0.01" value="20.00">
             </div>
         </div>
-        
+
         <div class="section">
             <div class="section-title">Token用量</div>
             <div class="input-group">
@@ -833,14 +836,14 @@ const htmlContent = `<!DOCTYPE html>
                 <input type="number" id="output-tokens" value="200">
             </div>
         </div>
-        
+
         <div class="section">
             <div class="section-title">汇率设置</div>
             <div class="exchange-form">
                 <div class="exchange-inputs">
                     <div class="input-group">
                         <label for="exchange-cny">人民币数值</label>
-                        <input type="number" id="exchange-cny" step="0.01" value="1.2" min="0.01">
+                        <input type="number" id="exchange-cny" step="0.01" value="7.2" min="0.01"> <!-- 默认汇率7.2 -->
                     </div>
                     <div class="exchange-equals">=</div>
                     <div class="input-group">
@@ -849,17 +852,17 @@ const htmlContent = `<!DOCTYPE html>
                     </div>
                 </div>
                 <div class="exchange-rate-display" id="exchange-rate-display">
-                    <span id="current-exchange-display"><span id="exchange-cny-value">1.2</span> 人民币 = <span id="exchange-usd-value">1.0</span> 美元</span>
+                    <span id="current-exchange-display"><span id="exchange-cny-value">7.2</span> 人民币 = <span id="exchange-usd-value">1.0</span> 美元</span>
                 </div>
                 <button type="button" class="secondary-button" onclick="applyExchangeRate()" style="width: 100%; margin-top: 1rem;">应用汇率</button>
             </div>
         </div>
-        
+
         <button onclick="calculatePrice()" class="calculate-button">计算价格</button>
-        
+
         <div id="results" class="results">
             <div class="section-title">计算结果</div>
-            
+
             <div class="results-grid">
                 <div class="results-column">
                     <div class="column-title">单价信息</div>
@@ -867,7 +870,7 @@ const htmlContent = `<!DOCTYPE html>
                         <button id="show-per-million" class="active" onclick="toggleUnit('million')">每百万tokens</button>
                         <button id="show-per-thousand" onclick="toggleUnit('thousand')">每千tokens</button>
                     </div>
-                    
+
                     <div class="base-price-section">
                         <div class="section-subtitle">标价信息</div>
                         <div class="result-row">
@@ -879,18 +882,18 @@ const htmlContent = `<!DOCTYPE html>
                             <span id="base-output-price-display">$0.00</span>
                         </div>
                     </div>
-                    
+
                     <div class="result-separator"></div>
                     <div class="section-subtitle">最终计算单价</div>
-                    
+
                     <button class="toggle-calculations" id="toggle-unit-calculations">显示计算过程</button>
-                    
+
                     <div class="price-calculation" style="margin-top: 1rem;">
                         <div>计算公式说明：</div>
                         <div>提示实际价格 = 模型倍率 × (提示标价 ÷ 模型倍率) × 分组倍率</div>
                         <div>补全实际价格 = 补全倍率 × (补全标价 ÷ 补全倍率) × 分组倍率</div>
                     </div>
-                    
+
                     <div class="price-currency-grid">
                         <div class="price-currency-column">
                             <div class="currency-label">USD 单价</div>
@@ -905,7 +908,7 @@ const htmlContent = `<!DOCTYPE html>
                             </div>
                             <div class="calculation-details" id="real-output-price-usd-calc"></div>
                         </div>
-                        
+
                         <div class="price-currency-column">
                             <div class="currency-label">CNY 单价</div>
                             <div class="result-row">
@@ -921,7 +924,7 @@ const htmlContent = `<!DOCTYPE html>
                         </div>
                     </div>
                 </div>
-                
+
                 <div class="results-column">
                     <div class="column-title">费用信息</div>
                     <button class="toggle-calculations" id="toggle-calculations">显示计算过程</button>
@@ -959,105 +962,125 @@ const htmlContent = `<!DOCTYPE html>
             </div>
         </div>
     </div>
-    
+
     <script>
         let currentUnit = 'million';
         let baseUnit = 'million'; // 保留这个变量用于基础价格单位切换
         let calculationResults = {};
-        
+
         function formatNumber(num, decimals) {
             // 如果数字为0，直接返回带小数点的0
             if (num === 0) {
                 return "0." + "0".repeat(decimals);
             }
-            
+
             // 直接使用toFixed方法，无额外处理
             return num.toFixed(decimals);
         }
-        
+
         function getExchangeRate() {
             const usdValue = parseFloat(document.getElementById('exchange-usd').value);
             const cnyValue = parseFloat(document.getElementById('exchange-cny').value);
-            
+
             if (!isNaN(usdValue) && !isNaN(cnyValue) && usdValue > 0 && cnyValue > 0) {
                 return cnyValue / usdValue; // 汇率 = 人民币值 / 美元值
             }
-            
-            return 7.2; // 默认汇率
+
+            // 如果输入无效或未设置，返回一个默认值，例如 7.2
+            // 在实际应用中，你可能希望从一个可靠的API获取实时汇率
+            // 但对于这个计算器，我们用一个默认值或用户输入值
+            const defaultCny = 7.2;
+            const defaultUsd = 1.0;
+            document.getElementById('exchange-cny').value = defaultCny;
+            document.getElementById('exchange-usd').value = defaultUsd;
+            updateExchangeRateDisplay(); // 更新显示为默认值
+            return defaultCny / defaultUsd;
         }
-        
+
+
         function toggleBaseUnit(unit) {
             // 自动调整价格
-            const baseInputPrice = parseFloat(document.getElementById('base-input-price').value);
-            const baseOutputPrice = parseFloat(document.getElementById('base-output-price').value);
-            
+            const baseInputPriceEl = document.getElementById('base-input-price');
+            const baseOutputPriceEl = document.getElementById('base-output-price');
+            const baseInputPrice = parseFloat(baseInputPriceEl.value);
+            const baseOutputPrice = parseFloat(baseOutputPriceEl.value);
+
             if (!isNaN(baseInputPrice) && !isNaN(baseOutputPrice)) {
                 if (unit === 'thousand' && baseUnit === 'million') {
                     // 从百万转换为千
-                    document.getElementById('base-input-price').value = (baseInputPrice / 1000).toFixed(6);
-                    document.getElementById('base-output-price').value = (baseOutputPrice / 1000).toFixed(6);
+                    baseInputPriceEl.value = (baseInputPrice / 1000).toFixed(6);
+                    baseOutputPriceEl.value = (baseOutputPrice / 1000).toFixed(6);
                 } else if (unit === 'million' && baseUnit === 'thousand') {
                     // 从千转换为百万
-                    document.getElementById('base-input-price').value = (baseInputPrice * 1000).toFixed(2);
-                    document.getElementById('base-output-price').value = (baseOutputPrice * 1000).toFixed(2);
+                    baseInputPriceEl.value = (baseInputPrice * 1000).toFixed(2);
+                    baseOutputPriceEl.value = (baseOutputPrice * 1000).toFixed(2);
                 }
             }
-            
+
             // 更新变量和UI状态
             baseUnit = unit;
             document.getElementById('base-price-per-million').classList.toggle('active', unit === 'million');
             document.getElementById('base-price-per-thousand').classList.toggle('active', unit === 'thousand');
-            
+
             // 更新标签文本
             const unitText = unit === 'million' ? '每百万tokens' : '每千tokens';
             document.getElementById('base-input-unit').textContent = unitText;
             document.getElementById('base-output-unit').textContent = unitText;
-            
+
             // 重新计算价格
             calculatePrice();
         }
-        
+
+
         function calculatePrice() {
             // 获取输入值
-            let baseInputPrice = parseFloat(document.getElementById('base-input-price').value);
-            let baseOutputPrice = parseFloat(document.getElementById('base-output-price').value);
-            const modelRate = parseFloat(document.getElementById('model-rate').value);
-            const completionRate = parseFloat(document.getElementById('completion-rate').value);
-            const groupRate = parseFloat(document.getElementById('group-rate').value);
-            const inputTokens = parseFloat(document.getElementById('input-tokens').value);
-            const outputTokens = parseFloat(document.getElementById('output-tokens').value);
-            const exchangeRate = getExchangeRate();
-            
+            let baseInputPrice = parseFloat(document.getElementById('base-input-price').value) || 0;
+            let baseOutputPrice = parseFloat(document.getElementById('base-output-price').value) || 0;
+            const modelRate = parseFloat(document.getElementById('model-rate').value) || 1;
+            const completionRate = parseFloat(document.getElementById('completion-rate').value) || 1;
+            const groupRate = parseFloat(document.getElementById('group-rate').value) || 1;
+            const inputTokens = parseFloat(document.getElementById('input-tokens').value) || 0;
+            const outputTokens = parseFloat(document.getElementById('output-tokens').value) || 0;
+            const exchangeRate = getExchangeRate(); // getExchangeRate 已包含默认值处理
+
+            // 确保倍率至少为1，防止除零或负数倍率问题
+            const safeModelRate = Math.max(0.000001, modelRate); // Use a very small positive number instead of 1 if 0 is invalid
+            const safeCompletionRate = Math.max(0.000001, completionRate);
+            const safeGroupRate = Math.max(0, groupRate); // Group rate can be 0
+
+
             // 根据单位调整基础价格到每百万tokens
+            let baseInputPricePerMillion = baseInputPrice;
+            let baseOutputPricePerMillion = baseOutputPrice;
             if (baseUnit === 'thousand') {
                 // 如果输入以每千tokens为单位，转换为每百万tokens
-                baseInputPrice = baseInputPrice * 1000;
-                baseOutputPrice = baseOutputPrice * 1000;
+                baseInputPricePerMillion = baseInputPrice * 1000;
+                baseOutputPricePerMillion = baseOutputPrice * 1000;
             }
-            
-            // 计算基准价格 = 标价 / 倍率
-            const baseRealInputPrice = baseInputPrice / modelRate;
-            const baseRealOutputPrice = baseOutputPrice / completionRate;
-            
+
+            // 计算基准价格 = 标价 / 倍率 (防止除以0)
+            const baseRealInputPrice = baseInputPricePerMillion / safeModelRate;
+            const baseRealOutputPrice = baseOutputPricePerMillion / safeCompletionRate;
+
             // 新的计算逻辑
             // 模型倍率 * 基准价格 * 分组倍率 = 实际价格
-            const realInputPricePerMillion = modelRate * baseRealInputPrice * groupRate;
-            const realOutputPricePerMillion = completionRate * baseRealOutputPrice * groupRate;
-            
+            const realInputPricePerMillion = safeModelRate * baseRealInputPrice * safeGroupRate;
+            const realOutputPricePerMillion = safeCompletionRate * baseRealOutputPrice * safeGroupRate;
+
             // 计算每千tokens价格
             const realInputPricePerThousand = realInputPricePerMillion / 1000;
             const realOutputPricePerThousand = realOutputPricePerMillion / 1000;
-            
+
             // 计算费用 (基于实际用量)
             const inputCost = (inputTokens / 1000000) * realInputPricePerMillion;
             const outputCost = (outputTokens / 1000000) * realOutputPricePerMillion;
             const totalCost = inputCost + outputCost;
-            
+
             // 计算人民币费用
             const inputCostCny = inputCost * exchangeRate;
             const outputCostCny = outputCost * exchangeRate;
             const totalCostCny = totalCost * exchangeRate;
-            
+
             // 保存计算结果，添加额外数据用于显示
             calculationResults = {
                 perMillion: {
@@ -1070,13 +1093,16 @@ const htmlContent = `<!DOCTYPE html>
                     outputCostCny: outputCostCny,
                     totalCostCny: totalCostCny,
                     // 添加更多字段用于显示计算过程
-                    baseInputPrice: baseUnit === 'thousand' ? baseInputPrice / 1000 : baseInputPrice,
-                    baseOutputPrice: baseUnit === 'thousand' ? baseOutputPrice / 1000 : baseOutputPrice,
-                    baseRealInputPrice: baseUnit === 'thousand' ? baseRealInputPrice / 1000 : baseRealInputPrice,
-                    baseRealOutputPrice: baseUnit === 'thousand' ? baseRealOutputPrice / 1000 : baseRealOutputPrice,
-                    modelRate: modelRate,
-                    completionRate: completionRate,
-                    groupRate: groupRate
+                    baseInputPrice: baseInputPricePerMillion, // Always store per million internally for consistency
+                    baseOutputPrice: baseOutputPricePerMillion,
+                    baseRealInputPrice: baseRealInputPrice,
+                    baseRealOutputPrice: baseRealOutputPrice,
+                    modelRate: safeModelRate,
+                    completionRate: safeCompletionRate,
+                    groupRate: safeGroupRate,
+                    inputTokens: inputTokens,
+                    outputTokens: outputTokens,
+                    exchangeRate: exchangeRate
                 },
                 perThousand: {
                     inputPrice: realInputPricePerThousand,
@@ -1088,47 +1114,55 @@ const htmlContent = `<!DOCTYPE html>
                     outputCostCny: outputCostCny,
                     totalCostCny: totalCostCny,
                     // 添加更多字段用于显示计算过程
-                    baseInputPrice: baseInputPrice / 1000,
-                    baseOutputPrice: baseOutputPrice / 1000,
+                    baseInputPrice: baseInputPricePerMillion / 1000,
+                    baseOutputPrice: baseOutputPricePerMillion / 1000,
                     baseRealInputPrice: baseRealInputPrice / 1000,
                     baseRealOutputPrice: baseRealOutputPrice / 1000,
-                    modelRate: modelRate,
-                    completionRate: completionRate,
-                    groupRate: groupRate
+                    modelRate: safeModelRate,
+                    completionRate: safeCompletionRate,
+                    groupRate: safeGroupRate,
+                    inputTokens: inputTokens,
+                    outputTokens: outputTokens,
+                    exchangeRate: exchangeRate
                 }
             };
-            
+
             // 显示结果
             updateResultsDisplay();
-            
+
             // 显示结果区域
             const resultsElement = document.getElementById('results');
-            resultsElement.classList.add('show');
-            
+            if (resultsElement) {
+                 resultsElement.classList.add('show');
+            }
+
             // 添加数字计数动画效果
             animateResults();
         }
-        
+
+
         function animateResults() {
             // 为数字添加专业的动画效果
             const animatedElements = [
-                { id: 'real-input-price-usd', delay: 100 },
+                { id: 'base-input-price-display', delay: 50 },
+                { id: 'base-output-price-display', delay: 100 },
+                { id: 'real-input-price-usd', delay: 150 },
                 { id: 'real-output-price-usd', delay: 200 },
-                { id: 'real-input-price-cny', delay: 300 },
-                { id: 'real-output-price-cny', delay: 400 },
-                { id: 'input-cost', delay: 500 },
-                { id: 'output-cost', delay: 600 },
-                { id: 'input-cost-cny', delay: 700 },
-                { id: 'output-cost-cny', delay: 800 },
-                { id: 'total-cost', delay: 1000, isTotal: true },
-                { id: 'total-cost-cny', delay: 1100, isTotal: true }
+                { id: 'real-input-price-cny', delay: 250 },
+                { id: 'real-output-price-cny', delay: 300 },
+                { id: 'input-cost', delay: 350 },
+                { id: 'output-cost', delay: 400 },
+                { id: 'input-cost-cny', delay: 450 },
+                { id: 'output-cost-cny', delay: 500 },
+                { id: 'total-cost', delay: 600, isTotal: true },
+                { id: 'total-cost-cny', delay: 650, isTotal: true }
             ];
-            
-            // 添加脉冲波动动画的CSS
+
+            // 添加脉冲波动动画的CSS (确保只添加一次)
             if (!document.getElementById('animation-styles')) {
                 const styleSheet = document.createElement('style');
                 styleSheet.id = 'animation-styles';
-                styleSheet.innerHTML = `
+                styleSheet.innerHTML = \`
                     @keyframes pulseGlow {
                         0% { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.4); }
                         70% { box-shadow: 0 0 0 10px rgba(37, 99, 235, 0); }
@@ -1140,317 +1174,433 @@ const htmlContent = `<!DOCTYPE html>
                     }
                     @keyframes highlight {
                         0% { background-color: transparent; }
-                        50% { background-color: rgba(37, 99, 235, 0.15); }
+                        50% { background-color: rgba(37, 99, 235, 0.1); } /* Lighter highlight */
                         100% { background-color: transparent; }
                     }
                     .result-highlight {
-                        animation: highlight 1.5s ease;
+                        animation: highlight 1.2s ease-out; /* Faster highlight */
                         border-radius: 4px;
+                        display: inline-block; /* Ensure background covers text */
+                        padding: 0 2px; /* Small padding */
+                        margin: 0 -2px; /* Counteract padding */
                     }
                     .total-highlight {
                         position: relative;
                     }
-                    .total-highlight::after {
-                        content: '';
-                        position: absolute;
-                        top: 0;
-                        left: 0;
-                        right: 0;
-                        bottom: 0;
-                        border-radius: 4px;
-                        box-shadow: 0 0 10px rgba(239, 68, 68, 0.5);
-                        opacity: 0;
-                        animation: pulseGlow 1.5s ease-in-out;
-                    }
-                `;
+                    /* Removed pulseGlow ::after for cleaner look */
+                \`;
                 document.head.appendChild(styleSheet);
             }
-            
-            // 模拟数字计数动画
+
+            // 应用动画和高亮
             animatedElements.forEach(item => {
                 const element = document.getElementById(item.id);
                 if (!element) return;
-                
-                // 获取当前显示的值
-                const originalText = element.textContent;
-                // 提取数字部分
-                const match = originalText.match(/[¥$]([\d.]+)/);
-                
-                if (match) {
-                    const originalValue = parseFloat(match[1]);
-                    const currency = originalText.includes('$') ? '$' : '¥';
-                    const suffix = originalText.includes('/') ? originalText.substring(originalText.indexOf('/')) : '';
-                    
-                    // 保存原始类
-                    const originalClasses = element.className;
-                    
-                    setTimeout(() => {
-                        // 添加动画类
-                        element.style.opacity = '0';
-                        element.style.transform = 'translateY(10px)';
-                        element.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
-                        
-                        // 在下一帧应用动画
-                        requestAnimationFrame(() => {
-                            element.style.opacity = '1';
-                            element.style.transform = 'translateY(0)';
-                            
-                            // 添加高亮效果
-                            element.classList.add('result-highlight');
-                            
-                            // 如果是总费用，添加特殊高亮
-                            if (item.isTotal) {
-                                element.classList.add('total-highlight');
-                                // 粗体和稍大字体
-                                element.style.fontWeight = '700';
-                                element.style.fontSize = '1.15rem';
-                                
-                                // 添加脉冲效果
-                                setTimeout(() => {
-                                    element.style.transition = 'all 1s ease';
-                                    if (item.id === 'total-cost') {
-                                        element.style.color = '#2563eb';
-                                    } else {
-                                        element.style.color = '#ef4444';
-                                    }
-                                }, 1000);
-                            }
-                            
-                            // 移除动画类
-                            setTimeout(() => {
-                                element.classList.remove('result-highlight');
-                            }, 1500);
-                        });
-                    }, item.delay);
-                }
-            });
-            
-            // 添加结果区域的进入动画
-            const resultsColumns = document.querySelectorAll('.results-column');
-            resultsColumns.forEach((column, index) => {
-                column.style.opacity = '0';
-                column.style.transform = 'translateY(20px)';
-                column.style.transition = 'opacity 0.8s ease, transform 0.8s ease';
-                
+
+                 // 清除旧的动画和样式残留
+                element.style.opacity = '';
+                element.style.transform = '';
+                element.style.transition = '';
+                element.style.fontWeight = ''; // Reset font weight
+                element.style.fontSize = '';   // Reset font size
+                element.style.color = '';      // Reset color
+                element.classList.remove('result-highlight', 'total-highlight');
+
+
+                // 使用 setTimeout 触发动画
                 setTimeout(() => {
-                    column.style.opacity = '1';
-                    column.style.transform = 'translateY(0)';
-                }, 300 + index * 150);
+                    // Apply entrance animation
+                    element.style.opacity = '0';
+                    element.style.transform = 'translateY(8px)'; // Slightly smaller movement
+                    element.style.transition = 'opacity 0.4s ease-out, transform 0.4s ease-out'; // Faster transition
+
+                    // Trigger reflow before applying final state
+                    void element.offsetWidth;
+
+                    element.style.opacity = '1';
+                    element.style.transform = 'translateY(0)';
+
+                    // Add highlight effect shortly after entrance
+                    setTimeout(() => {
+                         element.classList.add('result-highlight');
+                    }, 50); // Start highlight slightly after text appears
+
+
+                    // Style total costs differently
+                    if (item.isTotal) {
+                        element.classList.add('total-highlight');
+                        element.style.fontWeight = '700'; // Bold
+                        element.style.fontSize = '1.15rem'; // Slightly larger
+                         // element.style.color = item.id === 'total-cost' ? 'var(--primary-color)' : '#ef4444'; // Set color directly
+                    }
+
+                    // Clean up highlight class after animation
+                    setTimeout(() => {
+                         element.classList.remove('result-highlight');
+                         // Ensure final styles remain for totals
+                         if (item.isTotal) {
+                             element.style.fontWeight = '700';
+                             element.style.fontSize = '1.15rem';
+                             // element.style.color = item.id === 'total-cost' ? 'var(--primary-color)' : '#ef4444';
+                         } else {
+                             // Reset non-total elements to default styles if needed
+                             element.style.fontWeight = '';
+                             element.style.fontSize = '';
+                             element.style.color = '';
+                         }
+                    }, 1250); // Duration of highlight animation + entrance = 1200ms + buffer
+
+                }, item.delay);
             });
+
+             // Add results columns entrance animation
+             const resultsColumns = document.querySelectorAll('.results-column');
+             resultsColumns.forEach((column, index) => {
+                 column.style.opacity = '0';
+                 column.style.transform = 'translateY(15px)'; // Smaller movement
+                 column.style.transition = 'opacity 0.6s ease-out, transform 0.6s ease-out'; // Smoother/faster
+
+                 setTimeout(() => {
+                     column.style.opacity = '1';
+                     column.style.transform = 'translateY(0)';
+                 }, 150 + index * 100); // Faster stagger
+             });
         }
-        
+
+
         function toggleUnit(unit) {
             currentUnit = unit;
             document.getElementById('show-per-million').classList.toggle('active', unit === 'million');
             document.getElementById('show-per-thousand').classList.toggle('active', unit === 'thousand');
-            updateResultsDisplay();
+            updateResultsDisplay(); // Re-render results with the new unit
+            animateResults(); // Re-apply animation when unit changes
         }
-        
+
         function updateResultsDisplay() {
+            // Check if calculationResults is populated
+            if (!calculationResults.perMillion || !calculationResults.perThousand) {
+                console.log("Calculation results not ready.");
+                return; // Exit if data isn't ready
+            }
+
             const results = calculationResults[currentUnit === 'million' ? 'perMillion' : 'perThousand'];
+            const baseResults = calculationResults['perMillion']; // Base prices are always stored per million
+
             const unitSuffix = currentUnit === 'million' ? '/百万' : '/千';
-            const exchangeRate = getExchangeRate();
-            
-            // 获取基础价格以显示
-            const baseInputPrice = parseFloat(document.getElementById('base-input-price').value);
-            const baseOutputPrice = parseFloat(document.getElementById('base-output-price').value);
-            const modelRate = parseFloat(document.getElementById('model-rate').value);
-            const completionRate = parseFloat(document.getElementById('completion-rate').value);
-            const groupRate = parseFloat(document.getElementById('group-rate').value);
-            const inputTokens = parseFloat(document.getElementById('input-tokens').value);
-            const outputTokens = parseFloat(document.getElementById('output-tokens').value);
-            
-            // 显示基础价格
-            document.getElementById('base-input-price-display').textContent = 
-                '$' + formatNumber(results.baseInputPrice, 6) + unitSuffix + ' (标价)';
-            document.getElementById('base-output-price-display').textContent = 
-                '$' + formatNumber(results.baseOutputPrice, 6) + unitSuffix + ' (标价)';
-            
-            // 美元单价
-            document.getElementById('real-input-price-usd').textContent = 
-                '$' + formatNumber(results.inputPrice, 6) + unitSuffix;
-            document.getElementById('real-output-price-usd').textContent = 
-                '$' + formatNumber(results.outputPrice, 6) + unitSuffix;
-            
-            // 为美元单价添加计算过程 - 更新为正确的计算公式
-            document.getElementById('real-input-price-usd-calc').innerHTML = 
-                \`模型倍率 × (标价 ÷ 模型倍率) × 分组倍率<br>
-                 = \${formatNumber(modelRate, 2)} × ($\${formatNumber(results.baseInputPrice, 6)} ÷ \${formatNumber(modelRate, 2)}) × \${formatNumber(groupRate, 2)}<br>
-                 = \${formatNumber(modelRate, 2)} × $\${formatNumber(results.baseRealInputPrice, 6)} × \${formatNumber(groupRate, 2)}<br>
-                 = $\${formatNumber(results.inputPrice, 6)}\`;
-            document.getElementById('real-output-price-usd-calc').innerHTML = 
-                \`补全倍率 × (标价 ÷ 补全倍率) × 分组倍率<br>
-                 = \${formatNumber(completionRate, 2)} × ($\${formatNumber(results.baseOutputPrice, 6)} ÷ \${formatNumber(completionRate, 2)}) × \${formatNumber(groupRate, 2)}<br>
-                 = \${formatNumber(completionRate, 2)} × $\${formatNumber(results.baseRealOutputPrice, 6)} × \${formatNumber(groupRate, 2)}<br>
-                 = $\${formatNumber(results.outputPrice, 6)}\`;
-            
-            // 人民币单价 (美元单价 × 汇率)
+            const exchangeRate = results.exchangeRate; // Use stored rate
+            const modelRate = results.modelRate;
+            const completionRate = results.completionRate;
+            const groupRate = results.groupRate;
+            const inputTokens = results.inputTokens;
+            const outputTokens = results.outputTokens;
+
+            // Determine display precision based on unit
+            const priceDecimals = currentUnit === 'million' ? 6 : 6; // Keep 6 for per thousand too for precision
+            const costDecimals = 6; // Costs are usually fine with 6 decimals
+
+
+            // Helper to get elements safely
+            const getEl = (id) => document.getElementById(id);
+            const setContent = (id, text) => {
+                const el = getEl(id);
+                if (el) el.textContent = text;
+            };
+            const setHTML = (id, html) => {
+                 const el = getEl(id);
+                 if (el) el.innerHTML = html;
+            }
+
+            // --- Display Base Prices (always show based on the *input* unit setting) ---
+            const baseUnitSuffix = baseUnit === 'million' ? '/百万' : '/千';
+            const baseInputDisplayPrice = baseUnit === 'million' ? baseResults.baseInputPrice : baseResults.baseInputPrice / 1000;
+            const baseOutputDisplayPrice = baseUnit === 'million' ? baseResults.baseOutputPrice : baseResults.baseOutputPrice / 1000;
+            const basePriceDecimals = baseUnit === 'million' ? 2 : 6; // Adjust precision based on input setting
+
+            setContent('base-input-price-display', \`$\${formatNumber(baseInputDisplayPrice, basePriceDecimals)} \${baseUnitSuffix} (标价)\`);
+            setContent('base-output-price-display', \`$\${formatNumber(baseOutputDisplayPrice, basePriceDecimals)} \${baseUnitSuffix} (标价)\`);
+
+
+            // --- Display Real Unit Prices (USD) ---
+            setContent('real-input-price-usd', \`$\${formatNumber(results.inputPrice, priceDecimals)}\${unitSuffix}\`);
+            setContent('real-output-price-usd', \`$\${formatNumber(results.outputPrice, priceDecimals)}\${unitSuffix}\`);
+
+            // --- Display Real Unit Prices (CNY) ---
             const cnyInputPrice = results.inputPrice * exchangeRate;
             const cnyOutputPrice = results.outputPrice * exchangeRate;
-            
-            document.getElementById('real-input-price-cny').textContent = 
-                '¥' + formatNumber(cnyInputPrice, 6) + unitSuffix;
-            document.getElementById('real-output-price-cny').textContent = 
-                '¥' + formatNumber(cnyOutputPrice, 6) + unitSuffix;
-            
-            // 为人民币单价添加计算过程
-            document.getElementById('real-input-price-cny-calc').innerHTML = 
-                \`计算过程: $\${formatNumber(results.inputPrice, 6)} (美元单价) × \${formatNumber(exchangeRate, 2)} (汇率) = ¥\${formatNumber(cnyInputPrice, 6)}\`;
-            document.getElementById('real-output-price-cny-calc').innerHTML = 
-                \`计算过程: $\${formatNumber(results.outputPrice, 6)} (美元单价) × \${formatNumber(exchangeRate, 2)} (汇率) = ¥\${formatNumber(cnyOutputPrice, 6)}\`;
-            
-            // 费用信息
-            document.getElementById('input-cost').textContent = 
-                '$' + formatNumber(results.inputCost, 6);
-            document.getElementById('output-cost').textContent = 
-                '$' + formatNumber(results.outputCost, 6);
-            document.getElementById('total-cost').textContent = 
-                '$' + formatNumber(results.totalCost, 6);
-            
-            // 为费用信息添加计算过程 - 更新为正确的计算公式
-            document.getElementById('input-cost-calc').innerHTML = 
-                \`提示 \${inputTokens} tokens ÷ 1,000,000 × $\${formatNumber(results.inputPrice, 6)} = $\${formatNumber(results.inputCost, 6)}\`;
-            document.getElementById('output-cost-calc').innerHTML = 
-                \`补全 \${outputTokens} tokens ÷ 1,000,000 × $\${formatNumber(results.outputPrice, 6)} = $\${formatNumber(results.outputCost, 6)}\`;
-            document.getElementById('total-cost-calc').innerHTML = 
-                \`$\${formatNumber(results.inputCost, 6)} (提示费用) + $\${formatNumber(results.outputCost, 6)} (补全费用) = $\${formatNumber(results.totalCost, 6)}\`;
-            
-            // 人民币费用
-            document.getElementById('input-cost-cny').textContent = 
-                '¥' + formatNumber(results.inputCostCny, 6);
-            document.getElementById('output-cost-cny').textContent = 
-                '¥' + formatNumber(results.outputCostCny, 6);
-            document.getElementById('total-cost-cny').textContent = 
-                '¥' + formatNumber(results.totalCostCny, 6);
-            
-            // 为人民币费用添加计算过程
-            document.getElementById('input-cost-cny-calc').innerHTML = 
-                \`计算过程: $\${formatNumber(results.inputCost, 6)} (美元费用) × \${formatNumber(exchangeRate, 2)} (汇率) = ¥\${formatNumber(results.inputCostCny, 6)}\`;
-            document.getElementById('output-cost-cny-calc').innerHTML = 
-                \`计算过程: $\${formatNumber(results.outputCost, 6)} (美元费用) × \${formatNumber(exchangeRate, 2)} (汇率) = ¥\${formatNumber(results.outputCostCny, 6)}\`;
-            document.getElementById('total-cost-cny-calc').innerHTML = 
-                \`计算过程: $\${formatNumber(results.totalCost, 6)} (美元总费用) × \${formatNumber(exchangeRate, 2)} (汇率) = ¥\${formatNumber(results.totalCostCny, 6)}\`;
-        }
-        
-        function updateExchangeRateDisplay() {
-            const cnyValue = parseFloat(document.getElementById('exchange-cny').value);
-            const usdValue = parseFloat(document.getElementById('exchange-usd').value);
-            
-            if (!isNaN(cnyValue) && !isNaN(usdValue) && usdValue > 0 && cnyValue > 0) {
-                document.getElementById('exchange-cny-value').textContent = cnyValue.toFixed(2);
-                document.getElementById('exchange-usd-value').textContent = usdValue.toFixed(2);
+            setContent('real-input-price-cny', \`¥\${formatNumber(cnyInputPrice, priceDecimals)}\${unitSuffix}\`);
+            setContent('real-output-price-cny', \`¥\${formatNumber(cnyOutputPrice, priceDecimals)}\${unitSuffix}\`);
+
+            // --- Display Costs (USD) ---
+            setContent('input-cost', \`$\${formatNumber(results.inputCost, costDecimals)}\`);
+            setContent('output-cost', \`$\${formatNumber(results.outputCost, costDecimals)}\`);
+            setContent('total-cost', \`$\${formatNumber(results.totalCost, costDecimals)}\`);
+
+            // --- Display Costs (CNY) ---
+            setContent('input-cost-cny', \`¥\${formatNumber(results.inputCostCny, costDecimals)}\`);
+            setContent('output-cost-cny', \`¥\${formatNumber(results.outputCostCny, costDecimals)}\`);
+            setContent('total-cost-cny', \`¥\${formatNumber(results.totalCostCny, costDecimals)}\`);
+
+
+            // --- Update Calculation Details ---
+            const formatRate = (r) => formatNumber(r, 2); // Format rates consistently
+            const formatPrice = (p) => formatNumber(p, priceDecimals);
+            const formatCost = (c) => formatNumber(c, costDecimals);
+            const formatToken = (t) => t.toLocaleString(); // Format large token numbers
+
+            // Unit Price Calculations
+            const baseInputForCalc = results.baseInputPrice; // Use unit-adjusted base price for calc display
+            const baseOutputForCalc = results.baseOutputPrice;
+            const baseRealInputForCalc = results.baseRealInputPrice;
+            const baseRealOutputForCalc = results.baseRealOutputPrice;
+
+            setHTML('real-input-price-usd-calc', \`
+                模型倍率 × (标价 ÷ 模型倍率) × 分组倍率
+
+                = \${formatRate(modelRate)} × ($<span class="calc-num">\${formatPrice(baseInputForCalc)}</span>\${unitSuffix} ÷ \${formatRate(modelRate)}) × \${formatRate(groupRate)}
+
+                = \${formatRate(modelRate)} ×$<span class="calc-num">\${formatPrice(baseRealInputForCalc)}</span>\${unitSuffix} × \${formatRate(groupRate)}
+
+                = $<span class="calc-result">\${formatPrice(results.inputPrice)}</span>\${unitSuffix}
+            \`);
+             setHTML('real-output-price-usd-calc', \`
+                补全倍率 × (标价 ÷ 补全倍率) × 分组倍率
+
+                = \${formatRate(completionRate)} × ($<span class="calc-num">\${formatPrice(baseOutputForCalc)}</span>\${unitSuffix} ÷ \${formatRate(completionRate)}) × \${formatRate(groupRate)}
+
+                = \${formatRate(completionRate)} ×$<span class="calc-num">\${formatPrice(baseRealOutputForCalc)}</span>\${unitSuffix} × \${formatRate(groupRate)}
+
+                = $<span class="calc-result">\${formatPrice(results.outputPrice)}</span>\${unitSuffix}
+            \`);
+            setHTML('real-input-price-cny-calc', \`
+                $<span class="calc-num">\${formatPrice(results.inputPrice)}</span>\${unitSuffix} (USD单价) × \${formatRate(exchangeRate)} (汇率)
+
+                 = ¥<span class="calc-result">\${formatPrice(cnyInputPrice)}</span>\${unitSuffix}
+            \`);
+             setHTML('real-output-price-cny-calc', \`
+                $<span class="calc-num">\${formatPrice(results.outputPrice)}</span>\${unitSuffix} (USD单价) × \${formatRate(exchangeRate)} (汇率)
+
+                 = ¥<span class="calc-result">\${formatPrice(cnyOutputPrice)}</span>\${unitSuffix}
+            \`);
+
+            // Cost Calculations (Always use per million prices for cost calculation)
+            const inputPricePerM = calculationResults.perMillion.inputPrice;
+            const outputPricePerM = calculationResults.perMillion.outputPrice;
+
+            setHTML('input-cost-calc', \`
+                (\${formatToken(inputTokens)} tokens ÷ 1,000,000) ×$<span class="calc-num">\${formatNumber(inputPricePerM, 6)}</span>/百万
+
+                 = $<span class="calc-result">\${formatCost(results.inputCost)}</span>
+            \`);
+             setHTML('output-cost-calc', \`
+                (\${formatToken(outputTokens)} tokens ÷ 1,000,000) ×$<span class="calc-num">\${formatNumber(outputPricePerM, 6)}</span>/百万
+
+                 = $<span class="calc-result">\${formatCost(results.outputCost)}</span>
+            \`);
+            setHTML('total-cost-calc', \`
+                $<span class="calc-num">\${formatCost(results.inputCost)}</span> (提示USD) + $<span class="calc-num">\${formatCost(results.outputCost)}</span> (补全USD)
+
+                 = $<span class="calc-result">\${formatCost(results.totalCost)}</span>
+            \`);
+            setHTML('input-cost-cny-calc', \`
+                $<span class="calc-num">\${formatCost(results.inputCost)}</span> (提示USD) × \${formatRate(exchangeRate)} (汇率)
+
+                 = ¥<span class="calc-result">\${formatCost(results.inputCostCny)}</span>
+            \`);
+             setHTML('output-cost-cny-calc', \`
+                $<span class="calc-num">\${formatCost(results.outputCost)}</span> (补全USD) × \${formatRate(exchangeRate)} (汇率)
+
+                 = ¥<span class="calc-result">\${formatCost(results.outputCostCny)}</span>
+            \`);
+            setHTML('total-cost-cny-calc', \`
+                ¥<span class="calc-num">\${formatCost(results.inputCostCny)}</span> (提示CNY) + ¥<span class="calc-num">\${formatCost(results.outputCostCny)}</span> (补全CNY)
+
+                 = ¥<span class="calc-result">\${formatCost(results.totalCostCny)}</span>
+                
+或 $<span class="calc-num">\${formatCost(results.totalCost)}</span> (总USD) × \${formatRate(exchangeRate)} (汇率)
+            \`);
+
+             // Add styles for calculation details numbers
+             if (!document.getElementById('calc-detail-styles')) {
+                const style = document.createElement('style');
+                style.id = 'calc-detail-styles';
+                style.innerHTML = \`
+                    .calc-num { font-weight: 500; color: var(--text-light); }
+                    .calc-result { font-weight: 600; color: var(--primary-color); }
+                    .calculation-details br { margin-bottom: 4px; display: block; }
+                \`;
+                document.head.appendChild(style);
             }
         }
-        
+
+
+        function updateExchangeRateDisplay() {
+            const cnyInput = document.getElementById('exchange-cny');
+            const usdInput = document.getElementById('exchange-usd');
+            const cnyValue = parseFloat(cnyInput.value);
+            const usdValue = parseFloat(usdInput.value);
+
+            const displayCny = document.getElementById('exchange-cny-value');
+            const displayUsd = document.getElementById('exchange-usd-value');
+            const displayContainer = document.getElementById('exchange-rate-display');
+
+            if (displayCny && displayUsd) {
+                if (!isNaN(cnyValue) && !isNaN(usdValue) && usdValue > 0 && cnyValue > 0) {
+                    displayCny.textContent = cnyValue.toFixed(2);
+                    displayUsd.textContent = usdValue.toFixed(2);
+                    displayContainer.style.backgroundColor = 'var(--highlight-color)'; // Reset background on valid input
+                    displayContainer.style.borderLeft = '3px solid var(--primary-color)';
+                } else {
+                    // Optionally indicate invalid input, but keep the last valid display or default
+                    // For simplicity, we just don't update if invalid
+                }
+            }
+        }
+
+
         function applyExchangeRate() {
-            // 获取输入值
             const usdValue = parseFloat(document.getElementById('exchange-usd').value);
             const cnyValue = parseFloat(document.getElementById('exchange-cny').value);
-            
+            const exchangeRateDisplay = document.getElementById('exchange-rate-display');
+            const currentDisplay = document.getElementById('current-exchange-display');
+
             if (!isNaN(usdValue) && !isNaN(cnyValue) && usdValue > 0 && cnyValue > 0) {
-                // 更新汇率
-                const exchangeRate = cnyValue / usdValue;
-                
                 // 更新汇率显示
                 updateExchangeRateDisplay();
-                
-                // 高亮显示汇率变更成功
-                const exchangeRateDisplay = document.getElementById('exchange-rate-display');
-                exchangeRateDisplay.style.animation = 'none';
-                exchangeRateDisplay.style.backgroundColor = 'rgba(34, 197, 94, 0.1)';  // 成功绿色背景
-                exchangeRateDisplay.style.borderLeft = '3px solid #22c55e';  // 成功绿色边框
-                setTimeout(() => {
-                    exchangeRateDisplay.style.animation = 'fadeIn 0.5s ease';
-                    setTimeout(() => {
-                        exchangeRateDisplay.style.backgroundColor = 'var(--highlight-color)';
-                        exchangeRateDisplay.style.borderLeft = '3px solid var(--primary-color)';
-                    }, 1000);
-                }, 10);
-                
+
+                // 短暂高亮显示汇率应用成功
+                exchangeRateDisplay.style.transition = 'background-color 0.2s ease, border-color 0.2s ease';
+                exchangeRateDisplay.style.backgroundColor = 'rgba(34, 197, 94, 0.15)'; // Lighter success green
+                exchangeRateDisplay.style.borderLeftColor = '#22c55e';
+
                 // 重新计算价格
-                calculatePrice();
-            } else {
-                // 输入无效时显示提示在汇率显示区域
-                document.getElementById('current-exchange-display').textContent = '输入无效';
-                document.getElementById('exchange-rate-display').style.backgroundColor = 'rgba(239, 68, 68, 0.1)';  // 错误红色背景
-                document.getElementById('exchange-rate-display').style.borderLeft = '3px solid #ef4444';  // 错误红色边框
-                
-                // 3秒后恢复
+                calculatePrice(); // Calculate price uses the new values via getExchangeRate()
+
+                // 恢复原始样式
                 setTimeout(() => {
-                    document.getElementById('exchange-rate-display').style.backgroundColor = 'var(--highlight-color)';
-                    document.getElementById('exchange-rate-display').style.borderLeft = '3px solid var(--primary-color)';
-                    updateExchangeRateDisplay();
+                    exchangeRateDisplay.style.backgroundColor = 'var(--highlight-color)';
+                    exchangeRateDisplay.style.borderLeftColor = 'var(--primary-color)';
+                }, 1000); // Keep highlighted for 1 second
+
+            } else {
+                // 输入无效时显示提示
+                currentDisplay.textContent = '请输入有效的汇率值 (大于0)';
+                exchangeRateDisplay.style.transition = 'background-color 0.2s ease, border-color 0.2s ease';
+                exchangeRateDisplay.style.backgroundColor = 'rgba(239, 68, 68, 0.1)'; // Error red background
+                exchangeRateDisplay.style.borderLeftColor = '#ef4444'; // Error red border
+
+                // 3秒后尝试恢复显示 (如果用户没改的话会恢复默认)
+                setTimeout(() => {
+                     // Re-run display logic which might reset to defaults or previous valid state
+                     updateExchangeRateDisplay();
+                     // Get the current values again in case user fixed them
+                     const currentCny = parseFloat(document.getElementById('exchange-cny').value);
+                     const currentUsd = parseFloat(document.getElementById('exchange-usd').value);
+                     if (!isNaN(currentCny) && !isNaN(currentUsd) && currentUsd > 0 && currentCny > 0) {
+                         currentDisplay.innerHTML = \`<span id="exchange-cny-value">\${currentCny.toFixed(2)}</span> 人民币 = <span id="exchange-usd-value">\${currentUsd.toFixed(2)}</span> 美元\`;
+                         exchangeRateDisplay.style.backgroundColor = 'var(--highlight-color)';
+                         exchangeRateDisplay.style.borderLeftColor = 'var(--primary-color)';
+                     } else {
+                         // If still invalid, maybe keep the error message or clear it
+                          currentDisplay.innerHTML = \`<span id="exchange-cny-value">7.2</span> 人民币 = <span id="exchange-usd-value">1.0</span> 美元\`; // Reset to default text
+                          exchangeRateDisplay.style.backgroundColor = 'var(--highlight-color)';
+                          exchangeRateDisplay.style.borderLeftColor = 'var(--primary-color)';
+                     }
                 }, 3000);
             }
         }
-        
-        // 页面加载时初始化
-        window.onload = function() {
-            // 设置初始汇率显示
-            updateExchangeRateDisplay();
-            
-            // 添加输入事件监听
-            // 更新基准价格和标价的联动
-            document.getElementById('base-input-price').addEventListener('input', updateBaseRealPrices);
-            document.getElementById('base-output-price').addEventListener('input', updateBaseRealPrices);
-            
-            // 倍率变化时更新价格
-            document.getElementById('model-rate').addEventListener('input', updateBaseRealPrices);
-            document.getElementById('completion-rate').addEventListener('input', updateBaseRealPrices);
-            document.getElementById('group-rate').addEventListener('input', calculatePrice);
-            
-            // 添加输入框变化时更新显示
-            document.getElementById('exchange-cny').addEventListener('input', updateExchangeRateDisplay);
-            document.getElementById('exchange-usd').addEventListener('input', updateExchangeRateDisplay);
-            
-            // 添加计算过程显示切换功能
-            document.getElementById('toggle-calculations').addEventListener('click', function() {
-                const calcDetails = document.querySelectorAll('.calculation-details');
-                const isVisible = calcDetails[0].classList.contains('calculation-visible');
-                
-                calcDetails.forEach(detail => {
-                    detail.classList.toggle('calculation-visible', !isVisible);
-                });
-                
-                this.textContent = isVisible ? '显示计算过程' : '隐藏计算过程';
-            });
-            
-            // 添加单价计算过程显示切换功能
-            document.getElementById('toggle-unit-calculations').addEventListener('click', function() {
-                const calcDetails = document.querySelectorAll('.price-currency-column .calculation-details');
-                const isVisible = calcDetails[0].classList.contains('calculation-visible');
-                
-                calcDetails.forEach(detail => {
-                    detail.classList.toggle('calculation-visible', !isVisible);
-                });
-                
-                this.textContent = isVisible ? '显示计算过程' : '隐藏计算过程';
-            });
-            
-            // 自动计算价格
-            calculatePrice();
-        };
-        
-        // 更新基准价格
-        function updateBaseRealPrices(event) {
-            const baseInputPrice = parseFloat(document.getElementById('base-input-price').value);
-            const baseOutputPrice = parseFloat(document.getElementById('base-output-price').value);
-            const modelRate = parseFloat(document.getElementById('model-rate').value);
-            const completionRate = parseFloat(document.getElementById('completion-rate').value);
-            
-            // 不再显示基准价格，但仍然在内部计算
-            // 重新计算价格
+
+        // 更新基准价格 (仅触发重新计算)
+        function handleRateOrPriceChange() {
+            // No need to update intermediate displays, just recalculate everything
             calculatePrice();
         }
+
+        // 页面加载时和交互时初始化/更新
+        function initializeCalculator() {
+            // 设置初始汇率显示
+            updateExchangeRateDisplay();
+
+            // 添加事件监听器
+            const inputsToListen = [
+                'model-rate', 'completion-rate', 'group-rate',
+                'base-input-price', 'base-output-price',
+                'input-tokens', 'output-tokens',
+                'exchange-cny', // Listen to exchange rate inputs for live display update
+                'exchange-usd'
+            ];
+
+            inputsToListen.forEach(id => {
+                const element = document.getElementById(id);
+                if (element) {
+                     if (id === 'exchange-cny' || id === 'exchange-usd') {
+                         element.addEventListener('input', updateExchangeRateDisplay);
+                     } else {
+                         // Most inputs trigger a full recalculation on change
+                         element.addEventListener('input', handleRateOrPriceChange);
+                     }
+                }
+            });
+
+             // Setup toggle buttons
+             document.getElementById('toggle-calculations')?.addEventListener('click', function() {
+                 const isVisible = toggleVisibility('.results-column:nth-child(2) .calculation-details');
+                 this.textContent = isVisible ? '隐藏费用计算过程' : '显示费用计算过程';
+             });
+
+             document.getElementById('toggle-unit-calculations')?.addEventListener('click', function() {
+                 const isVisible = toggleVisibility('.price-currency-column .calculation-details');
+                 this.textContent = isVisible ? '隐藏单价计算过程' : '显示单价计算过程';
+             });
+
+             // Helper function for toggling visibility
+             function toggleVisibility(selector) {
+                 const details = document.querySelectorAll(selector);
+                 if (!details.length) return false;
+                 // Check visibility state based on the first element
+                 const currentlyVisible = details[0].classList.contains('calculation-visible');
+                 details.forEach(detail => {
+                     detail.classList.toggle('calculation-visible', !currentlyVisible);
+                 });
+                 return !currentlyVisible; // Return the new visibility state
+             }
+
+
+            // 首次加载时自动计算价格
+            calculatePrice();
+        }
+
+        // DOMContentLoaded is generally preferred over window.onload
+        document.addEventListener('DOMContentLoaded', initializeCalculator);
+
     </script>
 </body>
-</html>`;
+</html>
+`;
 
-console.log("Server running on http://localhost:8000");
-await serve(
-  (req: Request) =>
-    new Response(htmlContent, {
-      headers: { "content-type": "text/html; charset=utf-8" },
-    }),
-  { port: 8000 },
-);
+// Deno.serve takes a handler function that receives a Request object
+// and returns a Response object or a Promise resolving to a Response.
+Deno.serve((req: Request) => {
+  const url = new URL(req.url);
+
+  // Serve the main HTML file for the root path
+  if (url.pathname === "/") {
+    return new Response(htmlContent, {
+      headers: {
+        "Content-Type": "text/html; charset=utf-8",
+      },
+    });
+  }
+
+  // Optional: Handle favicon requests to avoid 404 logs in the browser console
+  if (url.pathname === "/favicon.ico") {
+     // You could return a small transparent ico file here if you have one,
+     // or just return 204 No Content or 404 Not Found.
+     return new Response(null, { status: 204 });
+  }
+
+  // For any other path, return 404 Not Found
+  return new Response("Not Found", { status: 404 });
+});
+
+// Log a message when the server starts (useful for local testing)
+console.log("Calculator server running. Access it at http://localhost:8000");
